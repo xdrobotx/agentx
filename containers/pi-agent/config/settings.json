@@ -1,0 +1,28 @@
+{
+  "thinkingBudgets": {
+    "minimal": 1024,
+    "low": 4096,
+    "medium": 10240,
+    "high": 32768
+  },
+  "sessionDir": ".pi/sessions",
+  "defaultProvider": "llamacpp",
+  "defaultModel": "qwen3.6:35B-A3B",
+  "defaultThinkingLevel": "high",
+  "theme": "dark",
+  "compaction": {
+    "enabled": true,
+    "reserveTokens": 16384,
+    "keepRecentTokens": 8192
+  },
+  "retry": {
+    "enabled": true,
+    "maxRetries": 3
+  },
+  "packages": [
+    "npm:pi-gitnexus",
+    "npm:pi-permission-system"
+  ],
+  "lastChangelogVersion": "0.75.4",
+  "hideThinkingBlock": false
+}

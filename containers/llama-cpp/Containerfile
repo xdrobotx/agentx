@@ -1,0 +1,63 @@
+# -----------------------------------------------------------------------------
+# llama.cpp Server Container
+#
+# Build:
+#   podman build -t llama-server -f Containerfile .
+#
+# Shared Podman Network:
+#   podman network create agentx-network
+#
+# Run:
+#   podman run --rm -d \
+#       --name llama-cpp-server \
+#       --device nvidia.com/gpu=all \
+#       --security-opt=label=disable \
+#       --network agentx-network \
+#       -p 9696:9696 \
+#       -v $(agentx-repo)/models:/models:Z \
+#       llama-server \
+#       --model /models/qwen-3.6-35B-A3B-MTP-IQ4_NL.gguf \
+#       --host 0.0.0.0 \
+#       --port 9696 \
+#       --n-gpu-layers 41 \
+#       --n-cpu-moe 256 ...
+#
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Build Stage
+# -----------------------------------------------------------------------------
+FROM nvidia/cuda:13.2.0-devel-ubuntu24.04 AS builder
+
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    cmake \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /opt/llama.cpp
+
+# Define target CUDA arch (89 = RTX 40xx, change to 'all' or your specific arch if different)
+ARG CUDA_ARCH=89
+
+RUN git clone https://github.com/ggml-org/llama.cpp.git . \
+    && cmake -B build \
+       -DGGML_CUDA=ON \
+       -DCMAKE_CUDA_ARCHITECTURES=${CUDA_ARCH} \
+       -DCMAKE_BUILD_TYPE=Release \
+       -DBUILD_SHARED_LIBS=OFF \
+    && cmake --build build --config Release -j$(nproc) --target llama-server
+
+# -----------------------------------------------------------------------------
+# Runtime Stage
+# -----------------------------------------------------------------------------
+FROM nvidia/cuda:13.2.0-runtime-ubuntu24.04
+
+WORKDIR /opt/llama.cpp
+
+# Copy compiled binary from builder stage
+COPY --from=builder /opt/llama.cpp/build/bin/llama-server /usr/local/bin/llama-server
+
+EXPOSE 9696
+
+ENTRYPOINT ["llama-server"]

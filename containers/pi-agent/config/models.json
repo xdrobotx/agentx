@@ -1,0 +1,18 @@
+{
+  "providers": {
+    "llamacpp": {
+      "baseUrl": "http://llama-cpp-server:9696/v1",
+      "api": "openai-completions",
+      "apiKey": "llama.cpp",
+      "models": [
+        {
+          "id": "qwen3.6:35B-A3B",
+          "name": "Qwen 3.6 MoE (35B-A3B)",
+          "input": ["text"],
+          "contextWindow": 131072,
+          "reasoning": true
+        }
+      ]
+    }
+  }
+}

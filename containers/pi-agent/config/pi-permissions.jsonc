@@ -1,0 +1,38 @@
+{
+  "defaultPolicy": {
+    "tools": "ask",
+    "bash": "ask",
+    "mcp": "ask",
+    "skills": "ask",
+    "special": "ask",
+  },
+  "tools": {
+    "read": "allow",
+    "grep": "allow",
+    "find": "allow",
+    "ls": "allow",
+    "write": "deny",
+    "edit": "deny",
+  },
+  "bash": {
+    "git *": "ask",
+    "git status": "allow",
+    "git diff": "allow",
+    "git log *": "allow",
+  },
+  "mcp": {
+    "*": "ask",
+    "mcp_status": "allow",
+    "mcp_list": "allow",
+    "mcp_search": "allow",
+    "mcp_describe": "allow",
+  },
+  "special": {
+    "read": "allow",
+    "grep": "allow",
+    "find": "allow",
+    "ls": "allow",
+    "write": "deny",
+    "edit": "deny",    
+  }
+}
