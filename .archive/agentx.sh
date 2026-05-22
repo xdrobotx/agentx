@@ -34,8 +34,8 @@ PI_CONTAINER="pi-coding-agent"
 WORKSPACE_DIR="${1:-$(pwd)}"
 WORKSPACE_DIR="$(cd "${WORKSPACE_DIR}" && pwd)"
 
-PI_CONTAINERFILE="${SCRIPT_DIR}/containers/pi-agent/Containerfile"
-PI_CONFIG_DIR="${SCRIPT_DIR}/containers/pi-agent/config"
+PI_CONTAINERFILE="${SCRIPT_DIR}/containers/pi/Containerfile"
+PI_CONFIG_DIR="${SCRIPT_DIR}/containers/pi/agent"
 HOST_MODELS_DIR="${SCRIPT_DIR}/models"
 
 # Console output formatting strings
@@ -52,7 +52,7 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
 # Assert local agent context configuration file is intact
 if [ ! -f "${PI_CONTAINERFILE}" ]; then
-    error "Missing Pi Agent Containerfile! Verify the 'containers/pi-agent' workspace layout."
+    error "Missing Pi Agent Containerfile! Verify the 'containers/pi' workspace layout."
 fi
 
 
@@ -102,7 +102,7 @@ if [ "${REBUILD_PI}" = true ]; then
         --label "containerfile_hash=${CURRENT_PI_HASH}" \
         -t "${PI_IMAGE}" \
         -f "${PI_CONTAINERFILE}" \
-        "${SCRIPT_DIR}/containers/pi-agent"
+        "${SCRIPT_DIR}/containers/pi"
     success "${PI_IMAGE} build completed."
 fi
 

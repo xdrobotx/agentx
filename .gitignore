@@ -1,5 +1,8 @@
-sessions/
+bin/
 npm/
+sessions/
+
+sample-project/
 
 auth.json
 *.gguf

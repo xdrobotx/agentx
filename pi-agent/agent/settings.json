@@ -1,4 +1,5 @@
 {
+  "lastChangelogVersion": "0.75.4",
   "thinkingBudgets": {
     "minimal": 1024,
     "low": 4096,
@@ -9,7 +10,7 @@
   "defaultProvider": "llamacpp",
   "defaultModel": "qwen3.6:35B-A3B",
   "defaultThinkingLevel": "high",
-  "theme": "dark",
+  "hideThinkingBlock": false,
   "compaction": {
     "enabled": true,
     "reserveTokens": 16384,
@@ -22,7 +23,5 @@
   "packages": [
     "npm:pi-gitnexus",
     "npm:pi-permission-system"
-  ],
-  "lastChangelogVersion": "0.75.4",
-  "hideThinkingBlock": false
+  ]
 }
