@@ -3,8 +3,8 @@
 export CUDA_VISIBLE_DEVICES=1
 
 llama-server \
-    --model /e/ai/.models/gemma-4-E4B-IT-QAT/gemma-4-E4B-it-qat-UD-Q4_K_XL.gguf \
-    --mmproj /e/ai/.models/gemma-4-E4B-IT-QAT/mmproj-gemma-4-E4B-F16.gguf \
+    --model $LLAMA_MODELS_PATH/gemma-4-E4B-IT-QAT/gemma-4-E4B-it-qat-UD-Q4_K_XL.gguf \
+    --mmproj $LLAMA_MODELS_PATH/gemma-4-E4B-IT-QAT/mmproj-gemma-4-E4B-F16.gguf \
     --host 0.0.0.0 \
     --port 6969 \
     --ctx-size 32768 \

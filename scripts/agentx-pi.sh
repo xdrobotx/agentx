@@ -43,8 +43,8 @@ CONTAINER_NAME="agentx"
 WORKSPACE_DIR="${1:-$(pwd)}"
 WORKSPACE_DIR="$(cd "${WORKSPACE_DIR}" && pwd)"
 
-CONTAINERFILE="${SCRIPT_DIR}/pi-agent/Containerfile"
-AGENT_CONFIG="${SCRIPT_DIR}/pi-agent/agent"
+CONTAINERFILE="${SCRIPT_DIR}/container-envs/pi-agent/Containerfile"
+AGENT_CONFIG="${SCRIPT_DIR}/container-envs/pi-agent/agent"
 
 # ------------------------------------------------------------------------------
 # Preconditions

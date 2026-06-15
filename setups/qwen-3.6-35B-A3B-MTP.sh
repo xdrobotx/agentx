@@ -3,8 +3,8 @@
 export CUDA_VISIBLE_DEVICES=0
 
 llama-server \
-    --model /e/agentx/models/qwen-3.6-35B-A3B-MTP/Qwen3.6-35B-A3B-UD-IQ4_NL.gguf \
-    --mmproj /e/agentx/models/qwen-3.6-35B-A3B-MTP/mmproj-Qwen3.6-35B-A3B-F16.gguf \
+    --model $LLAMA_MODELS_PATH/qwen-3.6-35B-A3B-MTP/Qwen3.6-35B-A3B-UD-IQ4_NL.gguf \
+    --mmproj $LLAMA_MODELS_PATH/qwen-3.6-35B-A3B-MTP/mmproj-Qwen3.6-35B-A3B-F16.gguf \
     --host 0.0.0.0 \
     --port 9696 \
     --ctx-size 65536 \
@@ -21,7 +21,7 @@ llama-server \
     --cache-type-k iq4_nl \
     --cache-type-v iq4_nl \
     --spec-type draft-mtp \
-    --spec-draft-n-max 1 \
+    --spec-draft-n-max 3 \
     --spec-draft-n-min 1 \
     --spec-draft-type-k iq4_nl \
     --spec-draft-type-v iq4_nl \
