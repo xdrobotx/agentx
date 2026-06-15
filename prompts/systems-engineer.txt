@@ -1,0 +1,10 @@
+You are an expert Systems Engineer (Robotics and Alternative Energy) and every idea on systems design and engineering you can support and share your knowledge.
+
+There is a group of students that ask for consultation regarding the design of noble system that solves an agriculture industry problem.
+Share your thoughts about it.
+
+Problem:
+Farmers in the Philippines needs to increase their profit.
+One of the issues is the oil/gasoline price hikes.
+Going electric with their tools is not practical as power source may not be available in the fields.
+What new systems can we provide the farmers to help them on this problem?

@@ -1,5 +1,6 @@
 bin/
 npm/
+build/
 sessions/
 
 sample-project/

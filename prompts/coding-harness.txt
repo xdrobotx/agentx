@@ -1,0 +1,18 @@
+I need you to ideate and collaborate with me about a project I like to start.
+
+ Purpose: To develop a lean agentic coding harness using Rust.
+ Philosophy: The same as that of the Pi coding agent framework.
+ Features:
+ - Extensible & customizable
+ - Configuration
+ - Fast & Performant
+ - TUI, CLI
+ - Focus on utilizing locally running LLMs via llama.cpp server.
+ - Autonomous agents following best-practices of Software Engineering for safety-critical systems.
+     - Traceability
+     - Safety
+ - and many more later...
+
+ Do you think this is doable for a solo developer with help from you?
+ Do you have feature suggestions?
+ Let's talk about it.
