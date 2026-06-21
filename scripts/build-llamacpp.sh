@@ -42,9 +42,9 @@ mkdir -p "$INSTALL_DIR"
 # Submodule
 ###############################################################################
 
-log "Updating submodules..."
+# log "Updating submodules..."
 
-git submodule update --init --recursive
+# git submodule update --init --recursive
 
 ###############################################################################
 # Configure
