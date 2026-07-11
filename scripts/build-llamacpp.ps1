@@ -17,9 +17,10 @@ $Config = @{}
 
 Get-Content "$ProjectRoot\config\build.env" |
 ForEach-Object {
-
     if ($_ -match '^([^=]+)=(.*)$') {
-        $Config[$matches[1]] = $matches[2]
+        # Trim whitespace, then safely strip wrapping single or double quotes
+        $Value = $matches[2].Trim() -replace '^["'']|["'']$', ''
+        $Config[$matches[1]] = $Value
     }
 }
 
@@ -40,7 +41,6 @@ function Log {
 ###############################################################################
 
 if (-not (Test-Path "$LLAMACPP_REPO\CMakeLists.txt")) {
-
     throw "Cannot find llama.cpp source tree."
 }
 
@@ -58,10 +58,11 @@ Log "Updating submodules..."
 git submodule update --init --recursive
 
 ###############################################################################
-# Configure
+# Configure & Build (Executed within the llama.cpp repository)
 ###############################################################################
 
-Set-Location $LLAMACPP_REPO
+# Push-Location saves our starting path so we can return cleanly later
+Push-Location $LLAMACPP_REPO
 
 Log "Configuring build..."
 
@@ -91,11 +92,10 @@ cmake --install build `
     --config $Config["BUILD_TYPE"]
 
 ###############################################################################
-# Cleanup
+# Cleanup & Return
 ###############################################################################
 
 if ($Config["KEEP_BUILD_DIR"] -ne "true") {
-
     Log "Cleaning build directory..."
 
     Remove-Item `
@@ -103,5 +103,8 @@ if ($Config["KEEP_BUILD_DIR"] -ne "true") {
         -Force `
         .\build
 }
+
+# Safely return to the original directory we started the script from
+Pop-Location
 
 Log "Done."
