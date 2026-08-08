@@ -68,6 +68,9 @@ Log "Configuring build..."
 
 cmake -B build `
     -DGGML_CUDA=ON `
+    -DGGML_CUDA_BLAS=ON `
+    -DGGML_CUDA_BLAS_VENDOR=OpenBLAS `
+    -DGGML_CUDA_NCCL=ON `
     -DGGML_NATIVE=OFF `
     -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" `
     -DCMAKE_CUDA_ARCHITECTURES="$($Config['CUDA_ARCH'])"
