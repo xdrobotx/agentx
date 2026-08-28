@@ -3,8 +3,8 @@
 export CUDA_VISIBLE_DEVICES=0
 
 llama-server \
-    --model /e/llama.cpp/models/qwen-3.6-35B-A3B/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf \
-    --mmproj /e/llama.cpp/models/qwen-3.6-35B-A3B/mmproj-Qwen3.6-35B-A3B-F16.gguf \
+    --model $LLAMA_MODELS_PATH/qwen-3.6-35B-A3B/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf \
+    --mmproj $LLAMA_MODELS_PATH/qwen-3.6-35B-A3B/mmproj-Qwen3.6-35B-A3B-F16.gguf \
     --host 0.0.0.0 \
     --port 9696 \
     --ctx-size 262144 \

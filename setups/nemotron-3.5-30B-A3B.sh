@@ -3,7 +3,7 @@
 export CUDA_VISIBLE_DEVICES=0
 
 llama-server \
-    --model /e/llama.cpp/models/nemotron-3.5-lightning-30B-A3B/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-Q4_0.gguf \
+    --model $LLAMA_MODELS_PATH/nemotron-3.5-lightning-30B-A3B/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-Q4_0.gguf \
     --host 0.0.0.0 \
     --port 9696 \
     --ctx-size 131072 \
