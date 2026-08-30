@@ -111,6 +111,33 @@ done
 # ---------------------------------------------------------------------------
 log() { echo "[run-llama] $(date '+%H:%M:%S') $*"; }
 
+# Detect GPU passthrough method (CDI vs manual WSL2 device passthrough)
+GPU_PASSTHROUGH_METHOD=""  # "cdi" or "wsl2"
+
+detect_gpu_passthrough() {
+    if [[ -n "$GPU_PASSTHROUGH_METHOD" ]]; then
+        return
+    fi
+    
+    # Check if CDI is available (crun >= 1.29 + Podman with CDI support)
+    if podman info 2>/dev/null | grep -qi cdi; then
+        GPU_PASSTHROUGH_METHOD="cdi"
+        log "GPU passthrough: CDI mode"
+        return
+    fi
+    
+    # Check if /dev/dxg exists (WSL2 NVIDIA driver)
+    if [[ -e /dev/dxg ]] || podman machine ssh -- test -e /dev/dxg 2>/dev/null || \
+       wsl -d podman-machine-default test -e /dev/dxg 2>/dev/null; then
+        GPU_PASSTHROUGH_METHOD="wsl2"
+        log "GPU passthrough: WSL2 manual device passthrough mode"
+        return
+    fi
+    
+    GPU_PASSTHROUGH_METHOD="none"
+    log "Warning: No GPU passthrough method detected. Containers will not have GPU access."
+}
+
 get_port() {
     local gpu="$1"
     if [[ -n "$PORT" ]]; then
@@ -128,6 +155,34 @@ get_image() {
 get_container_name() {
     local gpu="$1"
     echo "${GPU_CONTAINER[$gpu]}"
+}
+
+# ---------------------------------------------------------------------------
+# Build GPU passthrough args based on detection
+# ---------------------------------------------------------------------------
+build_gpu_args() {
+    detect_gpu_passthrough
+    
+    case "$GPU_PASSTHROUGH_METHOD" in
+        cdi)
+            # CDI mode: use --device nvidia.com/gpu=all
+            echo "--device nvidia.com/gpu=all --security-opt=label=disable"
+            ;;
+        wsl2)
+            # WSL2 mode: manually pass /dev/dxg + mount WSL2 NVIDIA libraries
+            cat <<'WSL2ARGS'
+--device=/dev/dxg
+-v /usr/lib/wsl/lib:/usr/lib/wsl/lib:ro
+-v /usr/lib/wsl/drivers/nv_dispsi.inf_amd64_671c0a23616db704:/usr/lib/wsl/drivers/nv_dispsi.inf_amd64_671c0a23616db704:ro
+-e NVIDIA_DRIVER_CAPABILITIES=all
+-e NVIDIA_VISIBLE_DEVICES=all
+-e LD_LIBRARY_PATH=/usr/lib/wsl/lib:/usr/lib/wsl/drivers/nv_dispsi.inf_amd64_671c0a23616db704
+WSL2ARGS
+            ;;
+        none)
+            log "Warning: GPU passthrough not available. Running without GPU."
+            ;;
+    esac
 }
 
 # ---------------------------------------------------------------------------
@@ -178,15 +233,21 @@ do_run_from_config() {
         exit 1
     fi
 
+    local gpu_args
+    gpu_args=$(build_gpu_args)
+
     local run_args=(
         --rm -d
         --name "$name"
-        --device nvidia.com/gpu=all
-        --security-opt=label=disable
         --network agentx-network
         -p "${port}:9696"
         -v "$(dirname "${model_path}"):/models:ro,z"
     )
+    
+    # Add GPU passthrough args
+    while IFS= read -r arg; do
+        [[ -n "$arg" ]] && run_args+=("$arg")
+    done <<< "$gpu_args"
 
     local server_args=(
         "$image"
@@ -282,15 +343,21 @@ do_run_single() {
     local model_basename
     model_basename=$(basename "$MODEL")
 
+    local gpu_args
+    gpu_args=$(build_gpu_args)
+
     local run_args=(
         --rm -d
         --name "$name"
-        --device nvidia.com/gpu=all
-        --security-opt=label=disable
         --network agentx-network
         -p "${port}:9696"
         -v "$(dirname "${MODEL}"):/models:ro,z"
     )
+    
+    # Add GPU passthrough args
+    while IFS= read -r arg; do
+        [[ -n "$arg" ]] && run_args+=("$arg")
+    done <<< "$gpu_args"
 
     local server_args=(
         "$image"
@@ -359,13 +426,19 @@ do_run_router() {
 
     # Backend 1 (12.9 / GTX 1060)
     log "Starting backend 1 (llama-cpp-12.9) -> :$PORT_A"
-    podman run --rm -d \
-        --name llama-cpp-12.9 \
-        --device nvidia.com/gpu=all \
-        --security-opt=label=disable \
-        --network agentx-network \
-        -p "${PORT_A}:9696" \
-        -v "$(dirname "${MODEL_A}"):/models:ro,z" \
+    local gpu_args_1
+    gpu_args_1=$(build_gpu_args)
+    local backend1_args=(
+        --rm -d
+        --name llama-cpp-12.9
+        --network agentx-network
+        -p "${PORT_A}:9696"
+        -v "$(dirname "${MODEL_A}"):/models:ro,z"
+    )
+    while IFS= read -r arg; do
+        [[ -n "$arg" ]] && backend1_args+=("$arg")
+    done <<< "$gpu_args_1"
+    podman run "${backend1_args[@]}" \
         "$(get_image 12.9)" \
         --model "/models/${model_a_basename}" \
         --router-url "http://llama-router:9696" \
@@ -373,13 +446,19 @@ do_run_router() {
 
     # Backend 2 (13.2 / RTX 3050)
     log "Starting backend 2 (llama-cpp-13.2) -> :$PORT_B"
-    podman run --rm -d \
-        --name llama-cpp-13.2 \
-        --device nvidia.com/gpu=all \
-        --security-opt=label=disable \
-        --network agentx-network \
-        -p "${PORT_B}:9696" \
-        -v "$(dirname "${MODEL_B}"):/models:ro,z" \
+    local gpu_args_2
+    gpu_args_2=$(build_gpu_args)
+    local backend2_args=(
+        --rm -d
+        --name llama-cpp-13.2
+        --network agentx-network
+        -p "${PORT_B}:9696"
+        -v "$(dirname "${MODEL_B}"):/models:ro,z"
+    )
+    while IFS= read -r arg; do
+        [[ -n "$arg" ]] && backend2_args+=("$arg")
+    done <<< "$gpu_args_2"
+    podman run "${backend2_args[@]}" \
         "$(get_image 13.2)" \
         --model "/models/${model_b_basename}" \
         --router-url "http://llama-router:9696" \

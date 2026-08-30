@@ -15,7 +15,7 @@
 # -----------------------------------------------------------------------------
 # Build Stage
 # -----------------------------------------------------------------------------
-FROM nvidia/cuda:13.2.0-devel-ubuntu24.04 AS builder
+FROM nvidia/cuda:13.2.1-devel-ubuntu24.04 AS builder
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -41,7 +41,7 @@ RUN git clone https://github.com/ggml-org/llama.cpp.git . \
 # -----------------------------------------------------------------------------
 # Runtime Stage
 # -----------------------------------------------------------------------------
-FROM nvidia/cuda:13.2.0-runtime-ubuntu24.04
+FROM nvidia/cuda:13.2.1-runtime-ubuntu24.04
 
 WORKDIR /opt/llama.cpp
 

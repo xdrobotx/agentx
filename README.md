@@ -10,6 +10,7 @@
 
 - [Architecture](#architecture)
 - [Quick Start](docs/quick-start.md)
+- [NVIDIA GPU Setup](docs/nvidia-gpu-setup.md)
 - [Usage Guide](docs/usage.md)
 - [Configuration](docs/configuration.md)
 - [Build Guide](docs/build.md)
@@ -118,6 +119,7 @@ Pre-configured models in `containers/configs/`:
 │
 ├── docs/                      # User guides (modular)
 │   ├── quick-start.md         # Step-by-step getting started
+│   ├── nvidia-gpu-setup.md    # NVIDIA GPU passthrough guide
 │   ├── usage.md               # How to run, manage, and query
 │   ├── configuration.md       # JSON config format reference
 │   ├── build.md               # Native & container builds

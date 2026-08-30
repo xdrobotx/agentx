@@ -1,13 +1,15 @@
 # =============================================================================
 # Justfile — Unified Build & Container Manager
 #
-# All commands must be executed from a WSL2 terminal.
-# Windows paths are accessed via /mnt/<drive>/...
+# WSL2/Windows: All commands run in WSL2 terminal.
+#   Windows paths are accessed via /mnt/<drive>/...
+#
+# Native Linux: Commands run directly on the host.
 #
 # Prerequisites:
-#   - Podman installed in WSL2
-#   - NVIDIA drivers in Windows 11 22H2+
-#   - $LLAMA_MODELS_PATH set in ~/.bashrc
+#   - Podman installed (WSL2 or native Linux)
+#   - NVIDIA drivers installed (Windows 11 22H2+ or Linux driver)
+#   - $LLAMA_MODELS_PATH set in ~/.bashrc (WSL2/Windows)
 #   - Podman network: podman network create agentx-network
 #
 # GPU Mapping:
@@ -266,6 +268,10 @@ clean_containers:
 	@echo "Done."
 
 # ============================================================================
+# NVIDIA — NVIDIA Container Toolkit (auto-added to help below)
+# ============================================================================
+
+# ============================================================================
 # NETWORK — Podman network management
 # ============================================================================
 
@@ -281,6 +287,44 @@ network_create:
 network_status:
 	@echo "Podman networks:"
 	@podman network ls
+
+# ============================================================================
+# NVIDIA — NVIDIA Container Toolkit setup
+#   WSL2/Windows: Installs inside Podman Machine
+#   Native Linux: Installs directly on host
+# ============================================================================
+
+# Initialize Podman Machine if not already created (WSL2/Windows only)
+# Usage: just nvidia-init
+nvidia-init:
+	@bash '{{CONTAINERS_DIR}}/scripts/setup-nvidia-toolkit.sh' --init-only
+
+# Install NVIDIA Container Toolkit
+#   WSL2/Windows: Installs inside Podman Machine
+#   Native Linux: Installs directly on host (auto-detects platform)
+# Usage: just nvidia-toolkit
+#        just nvidia-toolkit --force   # Force reinstall
+#        just nvidia-toolkit --verify  # Only check status
+#        just nvidia-toolkit --platform rhel   # Force RHEL platform
+#        just nvidia-toolkit --platform debian # Force Debian/Ubuntu
+nvidia-toolkit args:
+	@bash '{{CONTAINERS_DIR}}/scripts/setup-nvidia-toolkit.sh' {{args}}
+
+# Verify NVIDIA Container Toolkit installation
+# Usage: just nvidia-verify
+nvidia-verify:
+	@bash '{{CONTAINERS_DIR}}/scripts/setup-nvidia-toolkit.sh' --verify
+
+# Remove NVIDIA Container Toolkit and CDI spec
+# Usage: just nvidia-clean
+nvidia-clean:
+	@bash '{{CONTAINERS_DIR}}/scripts/setup-nvidia-toolkit.sh' --clean
+
+# Test GPU passthrough in a container (shows nvidia-smi output)
+# Usage: just nvidia-test
+nvidia-test:
+	@echo "Testing GPU passthrough in a container..."
+	@bash '{{CONTAINERS_DIR}}/scripts/test-gpu.sh'
 
 # ============================================================================
 # INFO — Display information
@@ -342,6 +386,7 @@ help:
 	@echo "  just run --gpu 13.2 --model /path/to/model.gguf --port 9698"
 	@echo "  just run_config --config containers/configs/my-model.json"
 	@echo "  just run_router --model-a /path/a.gguf --model-b /path/b.gguf"
+	@echo "  (GPU passthrough auto-detected: CDI or WSL2 manual mode)"
 	@echo ""
 	@echo "STATUS:"
 	@echo "  just status              Show container status"
@@ -361,6 +406,16 @@ help:
 	@echo "  just clean_all           Clean all build artifacts"
 	@echo "  just clean_containers    Remove stopped containers"
 	@echo ""
+	@echo "NVIDIA TOOLKIT (auto-detects platform):"
+	@echo "  just nvidia-init         Init Podman Machine (WSL2/Windows only)"
+	@echo "  just nvidia-toolkit      Install NVIDIA Container Toolkit"
+	@echo "  just nvidia-toolkit --force   Force reinstall"
+	@echo "  just nvidia-toolkit --verify  Check if already installed"
+	@echo "  just nvidia-toolkit --platform rhel|debian  Force platform"
+	@echo "  just nvidia-verify       Quick status check"
+	@echo "  just nvidia-clean        Remove toolkit and CDI spec"
+	@echo "  just nvidia-test         Test GPU passthrough in a container"
+	@echo ""
 	@echo "NETWORK:"
 	@echo "  just network_create      Create Podman network"
 	@echo "  just network_status      Show network status"
@@ -370,8 +425,9 @@ help:
 	@echo "  just help                Show this help"
 	@echo ""
 	@echo "================================================================"
-	@echo "WSL2 Requirements:"
-	@echo "  - All commands run in WSL2 terminal"
-	@echo "  - Windows paths: /mnt/f/..."
-	@echo "  - $LLAMA_MODELS_PATH must be set in ~/.bashrc"
+	@echo "Requirements:"
+	@echo "  WSL2/Windows: Run in WSL2 terminal, Windows paths: /mnt/f/..."
+	@echo "  Native Linux: Run directly on host"
+	@echo "  $LLAMA_MODELS_PATH must be set in ~/.bashrc (WSL2/Windows)"
+	@echo "  NVIDIA drivers installed (Windows 11 22H2+ or Linux driver)"
 	@echo "================================================================"
