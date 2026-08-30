@@ -1,33 +1,21 @@
 # -----------------------------------------------------------------------------
-# llama.cpp Server Container
+# llama.cpp Server Container — CUDA 12.9 (GTX 1060, compute cap 6.1)
 #
 # Build:
-#   podman build -t llama-server -f Containerfile .
+#   just containers.build --cuda 12.9
+#   # or: podman build -t llama-server:cuda12.9 -f containers/images/cuda-12-9.Containerfile containers/
 #
-# Shared Podman Network:
-#   podman network create agentx-network
+# Run (standalone):
+#   just containers.run --cuda 12.9 --model /path/to/model.gguf
 #
-# Run:
-#   podman run --rm -d \
-#       --name llama-cpp-server \
-#       --device nvidia.com/gpu=all \
-#       --security-opt=label=disable \
-#       --network agentx-network \
-#       -p 9696:9696 \
-#       -v $(agentx-repo)/models:/models:Z \
-#       llama-server \
-#       --model /models/qwen-3.6-35B-A3B-MTP-IQ4_NL.gguf \
-#       --host 0.0.0.0 \
-#       --port 9696 \
-#       --n-gpu-layers 41 \
-#       --n-cpu-moe 256 ...
-#
+# Run (router mode — this instance as backend):
+#   just containers.router --model-a cuda12.9 --model-b cuda13.2
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
 # Build Stage
 # -----------------------------------------------------------------------------
-FROM nvidia/cuda:13.2.0-devel-ubuntu24.04 AS builder
+FROM nvidia/cuda:12.9.0-devel-ubuntu24.04 AS builder
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -37,12 +25,14 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /opt/llama.cpp
 
-# Define target CUDA arch (89 = RTX 40xx, change to 'all' or your specific arch if different)
-ARG CUDA_ARCH=89
+ARG CUDA_ARCH=61
 
 RUN git clone https://github.com/ggml-org/llama.cpp.git . \
     && cmake -B build \
        -DGGML_CUDA=ON \
+       -DGGML_CUDA_BLAS=ON \
+       -DGGML_CUDA_BLAS_VENDOR=NVIDIA \
+       -DGGML_NATIVE=OFF \
        -DCMAKE_CUDA_ARCHITECTURES=${CUDA_ARCH} \
        -DCMAKE_BUILD_TYPE=Release \
        -DBUILD_SHARED_LIBS=OFF \
@@ -51,13 +41,15 @@ RUN git clone https://github.com/ggml-org/llama.cpp.git . \
 # -----------------------------------------------------------------------------
 # Runtime Stage
 # -----------------------------------------------------------------------------
-FROM nvidia/cuda:13.2.0-runtime-ubuntu24.04
+FROM nvidia/cuda:12.9.0-runtime-ubuntu24.04
 
 WORKDIR /opt/llama.cpp
 
-# Copy compiled binary from builder stage
 COPY --from=builder /opt/llama.cpp/build/bin/llama-server /usr/local/bin/llama-server
+COPY --from=builder /opt/llama.cpp/build/bin/llama-quantize /usr/local/bin/llama-quantize
+COPY --from=builder /opt/llama.cpp/build/bin/llama-bench /usr/local/bin/llama-bench
 
 EXPOSE 9696
 
 ENTRYPOINT ["llama-server"]
+CMD ["--help"]

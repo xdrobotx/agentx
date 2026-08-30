@@ -1,6 +1,7 @@
 bin/
 npm/
-build/
+source-build/
+source-build/llama.cpp/build/
 sessions/
 
 sample-project/

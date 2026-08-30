@@ -1,0 +1,245 @@
+{
+    "_comment": "Maps user-friendly config keys to llama-server CLI flags.",
+    "_comment2": "Keys in model configs use the short form; this file maps them to actual flags.",
+
+    "model": {
+        "flag": "--model",
+        "type": "path",
+        "required": true,
+        "description": "Path to the model GGUF file inside the container"
+    },
+    "mmproj": {
+        "flag": "--mmproj",
+        "type": "path",
+        "required": false,
+        "description": "Path to the mmproj file (multimodal)"
+    },
+    "host": {
+        "flag": "--host",
+        "type": "string",
+        "default": "0.0.0.0",
+        "description": "Bind address"
+    },
+    "port": {
+        "flag": "--port",
+        "type": "int",
+        "default": 9696,
+        "description": "HTTP port"
+    },
+    "ctx_size": {
+        "flag": "--ctx-size",
+        "type": "int",
+        "default": 4096,
+        "description": "Context size (tokens)"
+    },
+    "predict": {
+        "flag": "--predict",
+        "type": "int",
+        "default": 512,
+        "description": "Max tokens to predict"
+    },
+    "batch_size": {
+        "flag": "--batch-size",
+        "type": "int",
+        "default": 2048,
+        "description": "Batch size for processing"
+    },
+    "ubatch_size": {
+        "flag": "--ubatch-size",
+        "type": "int",
+        "default": 512,
+        "description": "Ubatch size (micro-batch)"
+    },
+    "parallel": {
+        "flag": "--parallel",
+        "type": "int",
+        "default": 1,
+        "description": "Number of parallel sequences"
+    },
+    "threads": {
+        "flag": "--threads",
+        "type": "int",
+        "default": 4,
+        "description": "Number of CPU threads"
+    },
+    "gpu_layers": {
+        "flag": "--gpu-layers",
+        "type": "string",
+        "default": "all",
+        "description": "Layers to offload to GPU (number or 'all')"
+    },
+    "temperature": {
+        "flag": "--temperature",
+        "type": "float",
+        "default": 0.8,
+        "description": "Sampling temperature"
+    },
+    "top_p": {
+        "flag": "--top-p",
+        "type": "float",
+        "default": 0.95,
+        "description": "Top-p sampling threshold"
+    },
+    "top_k": {
+        "flag": "--top-k",
+        "type": "int",
+        "default": 40,
+        "description": "Top-k sampling threshold"
+    },
+    "min_p": {
+        "flag": "--min-p",
+        "type": "float",
+        "default": 0.05,
+        "description": "Minimum-p sampling threshold"
+    },
+    "repeat_penalty": {
+        "flag": "--repeat-penalty",
+        "type": "float",
+        "default": 1.1,
+        "description": "Repeat penalty"
+    },
+    "presence_penalty": {
+        "flag": "--presence-penalty",
+        "type": "float",
+        "default": 0.0,
+        "description": "Presence penalty"
+    },
+    "frequency_penalty": {
+        "flag": "--frequency-penalty",
+        "type": "float",
+        "default": 0.0,
+        "description": "Frequency penalty"
+    },
+    "flash_attn": {
+        "flag": "--flash-attn",
+        "type": "bool",
+        "default": false,
+        "description": "Enable Flash Attention"
+    },
+    "cache_type_k": {
+        "flag": "--cache-type-k",
+        "type": "string",
+        "default": "f16",
+        "description": "KV cache type for K"
+    },
+    "cache_type_v": {
+        "flag": "--cache-type-v",
+        "type": "string",
+        "default": "f16",
+        "description": "KV cache type for V"
+    },
+    "reasoning": {
+        "flag": "--reasoning",
+        "type": "bool",
+        "default": false,
+        "description": "Enable reasoning mode"
+    },
+    "reasoning_budget": {
+        "flag": "--reasoning-budget",
+        "type": "int",
+        "default": 0,
+        "description": "Reasoning token budget"
+    },
+    "jinja": {
+        "flag": "--jinja",
+        "type": "bool",
+        "default": false,
+        "description": "Use Jinja chat template"
+    },
+    "no_mmap": {
+        "flag": "--no-mmap",
+        "type": "bool",
+        "default": false,
+        "description": "Disable memory-mapped file loading"
+    },
+    "load_mode": {
+        "flag": "--load-mode",
+        "type": "string",
+        "default": "default",
+        "description": "Model loading mode (default, none, etc.)"
+    },
+    "cpu_moe": {
+        "flag": "--cpu-moe",
+        "type": "bool",
+        "default": false,
+        "description": "Offload MoE layers to CPU"
+    },
+    "cpu_moe_draft": {
+        "flag": "--cpu-moe-draft",
+        "type": "bool",
+        "default": false,
+        "description": "Offload MoE draft layers to CPU"
+    },
+    "fit": {
+        "flag": "--fit",
+        "type": "string",
+        "default": "off",
+        "description": "Fit mode (off, on, etc.)"
+    },
+    "cache_ram": {
+        "flag": "--cache-ram",
+        "type": "int",
+        "default": 0,
+        "description": "Cache RAM size in MB"
+    },
+    "cache_prompt": {
+        "flag": "--cache-prompt",
+        "type": "bool",
+        "default": false,
+        "description": "Cache prompt"
+    },
+    "reasoning_preserve": {
+        "flag": "--reasoning-preserve",
+        "type": "bool",
+        "default": false,
+        "description": "Preserve reasoning output"
+    },
+    "split_mode": {
+        "flag": "--split-mode",
+        "type": "string",
+        "default": "default",
+        "description": "Split mode for multi-GPU (default, layer, etc.)"
+    },
+    "spec_type": {
+        "flag": "--spec-type",
+        "type": "string",
+        "default": "default",
+        "description": "Speculative decoding type"
+    },
+    "spec_draft_n_max": {
+        "flag": "--spec-draft-n-max",
+        "type": "int",
+        "default": 0,
+        "description": "Speculative draft N max"
+    },
+    "spec_draft_n_min": {
+        "flag": "--spec-draft-n-min",
+        "type": "int",
+        "default": 0,
+        "description": "Speculative draft N min"
+    },
+    "spec_draft_type_k": {
+        "flag": "--spec-draft-type-k",
+        "type": "string",
+        "default": "f16",
+        "description": "Speculative draft KV cache type K"
+    },
+    "spec_draft_type_v": {
+        "flag": "--spec-draft-type-v",
+        "type": "string",
+        "default": "f16",
+        "description": "Speculative draft KV cache type V"
+    },
+    "image_min_tokens": {
+        "flag": "--image-min-tokens",
+        "type": "int",
+        "default": 0,
+        "description": "Minimum image tokens"
+    },
+    "chat_template_kwargs": {
+        "flag": "--chat-template-kwargs",
+        "type": "string",
+        "default": "",
+        "description": "JSON string of chat template kwargs"
+    }
+}
