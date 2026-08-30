@@ -21,7 +21,7 @@ SOURCE_BUILD="$PROJECT_ROOT/source-build"
 # ---------------------------------------------------------------------------
 # Config (sourced from shared config)
 # ---------------------------------------------------------------------------
-source "$PROJECT_ROOT/config/build.env"
+source "$SOURCE_BUILD/config/build.env"
 
 # Allow environment overrides
 INSTALL_DIR="${INSTALL_DIR_LINUX:-$INSTALL_DIR_LINUX}"
