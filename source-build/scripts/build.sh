@@ -15,8 +15,8 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(realpath "$SCRIPT_DIR/../..")"
-LLAMACPP_SRC="$PROJECT_ROOT/llama.cpp"
 SOURCE_BUILD="$PROJECT_ROOT/source-build"
+LLAMACPP_SRC="$SOURCE_BUILD/llama.cpp"
 
 # ---------------------------------------------------------------------------
 # Config (sourced from shared config)

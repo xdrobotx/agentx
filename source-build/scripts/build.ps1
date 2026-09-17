@@ -14,7 +14,7 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Resolve-Path (Join-Path $ScriptDir "..")
 $SourceBuild = Resolve-Path (Join-Path $ScriptDir "..")
-$LLAMACPP_REPO = Join-Path $ProjectRoot "llama.cpp"
+$LLAMACPP_REPO = Join-Path $SourceBuild "llama.cpp"
 
 # ---------------------------------------------------------------------------
 # Config
