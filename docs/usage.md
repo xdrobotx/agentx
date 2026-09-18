@@ -32,7 +32,7 @@ just run --gpu 12.9 --model /mnt/f/models/model.gguf
 ### With custom port
 
 ```bash
-just run --gpu 13.2 --model /mnt/f/models/model.gguf --port 9698
+just run --gpu 13.3 --model /mnt/f/models/model.gguf --port 9696
 ```
 
 ### With GPU layer control
@@ -46,7 +46,7 @@ just run --gpu 12.9 --model /mnt/f/models/model.gguf --n-gpu-layers 33
 | `--gpu` value | CUDA Version | Image | Target GPU |
 |---------------|-------------|-------|------------|
 | `12.9` | CUDA 12.9 | `llama-server:cuda12.9` | GTX 1060 (compute 6.1) |
-| `13.2` | CUDA 13.2 | `llama-server:cuda13.2` | RTX 3050 (compute 8.6) |
+| `13.3` | CUDA 13.3 | `llama-server:cuda13.3` | RTX 3050 (compute 8.6) |
 
 ---
 
@@ -73,7 +73,7 @@ just config_show containers/configs/qwen-3.6-35B-A3B-coding.json
 ### Run with a config
 
 ```bash
-just run_config --config containers/configs/qwen-3.6-35B-A3B-coding.json
+just run_config containers/configs/qwen-3.6-35B-A3B-coding.json
 ```
 
 ---
@@ -121,7 +121,7 @@ just status
 ```bash
 just stop                    # Stop all
 just stop_12_9               # Stop CUDA 12.9 only
-just stop_13_2               # Stop CUDA 13.2 only
+just stop_13_3               # Stop CUDA 13.3 only
 ```
 
 ### Clean up

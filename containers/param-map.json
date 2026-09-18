@@ -112,9 +112,9 @@
     },
     "flash_attn": {
         "flag": "--flash-attn",
-        "type": "bool",
-        "default": false,
-        "description": "Enable Flash Attention"
+        "type": "string",
+        "default": "auto",
+        "description": "Enable Flash Attention (on|off|auto)"
     },
     "cache_type_k": {
         "flag": "--cache-type-k",
@@ -130,9 +130,9 @@
     },
     "reasoning": {
         "flag": "--reasoning",
-        "type": "bool",
-        "default": false,
-        "description": "Enable reasoning mode"
+        "type": "string",
+        "default": "auto",
+        "description": "Enable reasoning mode  (on|off|auto)"
     },
     "reasoning_budget": {
         "flag": "--reasoning-budget",

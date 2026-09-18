@@ -3,7 +3,7 @@
     "_comment2": "GPU: GTX 1060 (CUDA 12.9) | RTX 3050 (CUDA 13.2)",
 
     "model": "nemotron-3.5-30B-A3B",
-    "model_path": "$LLAMA_MODELS_PATH/nemotron-3.5-lightning-30B-A3B/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-Q4_0.gguf",
+    "model_path": "$LLAMA_MODELS_PATH/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-Q4_0.gguf",
     "cuda_version": "12.9",
 
     "host": "0.0.0.0",

@@ -3,8 +3,8 @@
     "_comment2": "GPU: GTX 1060 (CUDA 12.9) | RTX 3050 (CUDA 13.3)",
 
     "model": "qwen-3.6-35B-A3B-coding",
-    "model_path": "$LLAMA_MODELS_PATH/qwen-3.6-35B-A3B/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf",
-    "mmproj": "$LLAMA_MODELS_PATH/qwen-3.6-35B-A3B/mmproj-Qwen3.6-35B-A3B-F16.gguf",
+    "model_path": "$LLAMA_MODELS_PATH/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf",
+    "mmproj": "$LLAMA_MODELS_PATH/mmproj-Qwen3.6-35B-A3B-F16.gguf",
     "cuda_version": "13.3",
 
     "host": "0.0.0.0",
@@ -16,7 +16,7 @@
     "cpu_moe": true,
     "cpu_moe_draft": true,
     "fit": "off",
-    "flash_attn": true,
+    "flash_attn": "on",
     "cache_type_k": "q4_0",
     "cache_type_v": "q4_0",
     "spec_type": "draft-mtp",
@@ -35,7 +35,7 @@
     "repeat_penalty": 1.0,
     "presence_penalty": 0.0,
     "frequency_penalty": 0.0,
-    "reasoning": true,
+    "reasoning": "on",
     "reasoning_budget": 1024,
     "reasoning_preserve": true,
     "jinja": true

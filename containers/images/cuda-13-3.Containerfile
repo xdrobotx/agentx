@@ -38,18 +38,27 @@ RUN git clone https://github.com/ggml-org/llama.cpp.git . \
        -DBUILD_SHARED_LIBS=OFF \
     && cmake --build build --config Release -j$(nproc) --target llama-server llama-quantize llama-bench
 
-# -----------------------------------------------------------------------------
-# Runtime Stage
-# -----------------------------------------------------------------------------
-FROM nvidia/cuda:13.3.1-runtime-ubuntu26.04
-
-WORKDIR /opt/llama.cpp
-
-COPY --from=builder /opt/llama.cpp/build/bin/llama-server /usr/local/bin/llama-server
-COPY --from=builder /opt/llama.cpp/build/bin/llama-quantize /usr/local/bin/llama-quantize
-COPY --from=builder /opt/llama.cpp/build/bin/llama-bench /usr/local/bin/llama-bench
-
-EXPOSE 9696
-
-ENTRYPOINT ["llama-server"]
-CMD ["--help"]
+    # -----------------------------------------------------------------------------
+    # Runtime Stage
+    # -----------------------------------------------------------------------------
+    FROM nvidia/cuda:13.3.1-runtime-ubuntu26.04
+    
+    # Install runtime dependencies needed by llama-server
+    RUN apt-get update && apt-get install -y \
+        libgomp1 \
+        ca-certificates \
+        && rm -rf /var/lib/apt/lists/*
+    
+    # Ensure CUDA runtime libraries are discoverable
+    ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
+    
+    WORKDIR /opt/llama.cpp
+    
+    COPY --from=builder /opt/llama.cpp/build/bin/llama-server /usr/local/bin/llama-server
+    COPY --from=builder /opt/llama.cpp/build/bin/llama-quantize /usr/local/bin/llama-quantize
+    COPY --from=builder /opt/llama.cpp/build/bin/llama-bench /usr/local/bin/llama-bench
+    
+    EXPOSE 9696
+    
+    ENTRYPOINT ["llama-server"]
+    CMD ["--help"]

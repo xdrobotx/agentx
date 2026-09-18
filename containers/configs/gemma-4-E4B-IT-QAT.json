@@ -3,8 +3,8 @@
     "_comment2": "GPU: GTX 1060 (CUDA 12.9) | RTX 3050 (CUDA 13.2)",
 
     "model": "gemma-4-E4B-IT-QAT",
-    "model_path": "$LLAMA_MODELS_PATH/gemma-4-E4B-IT-QAT/gemma-4-E4B-it-qat-UD-Q4_K_XL.gguf",
-    "mmproj": "$LLAMA_MODELS_PATH/gemma-4-E4B-IT-QAT/mmproj-gemma-4-E4B-F16.gguf",
+    "model_path": "$LLAMA_MODELS_PATH/gemma-4-E4B-it-qat-UD-Q4_K_XL.gguf",
+    "mmproj": "$LLAMA_MODELS_PATH/mmproj-gemma-4-E4B-F16.gguf",
     "cuda_version": "12.9",
 
     "host": "0.0.0.0",

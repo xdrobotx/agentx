@@ -48,7 +48,7 @@ declare -A GPU_PORT=( [12.9]=6969 [13.3]=9696 )
 declare -A GPU_IMAGE=( [12.9]="localhost/llama-server:cuda12.9" [13.3]="localhost/llama-server:cuda13.3" )
 declare -A GPU_NAME=( [12.9]="gtx1060" [13.3]="rtx3050" )
 declare -A GPU_CONTAINER=( [12.9]="llama-cpp-12.9" [13.3]="llama-cpp-13.3" )
-declare -A GPU_CF=( [12.9]="cuda-12-9.Containerfile" [13.3]="cuda-13-2.Containerfile" )
+declare -A GPU_CF=( [12.9]="cuda-12-9.Containerfile" [13.3]="cuda-13-3.Containerfile" )
 
 # ---------------------------------------------------------------------------
 # Parse arguments
@@ -109,7 +109,7 @@ done
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-log() { echo "[run-llama] $(date '+%H:%M:%S') $*"; }
+log() { echo "[run-llama] $(date '+%H:%M:%S') $*" >&2; }
 
 # Detect GPU passthrough method (CDI vs manual WSL2 device passthrough)
 GPU_PASSTHROUGH_METHOD=""  # "cdi" or "wsl2"
@@ -166,7 +166,9 @@ build_gpu_args() {
     case "$GPU_PASSTHROUGH_METHOD" in
         cdi)
             # CDI mode: use --device nvidia.com/gpu=all
-            echo "--device nvidia.com/gpu=all --security-opt=label=disable"
+            echo "--device"
+            echo "nvidia.com/gpu=all"
+            echo "--security-opt=label=disable"
             ;;
         wsl2)
             # WSL2 mode: manually pass /dev/dxg + mount WSL2 NVIDIA libraries
@@ -209,7 +211,7 @@ do_run_from_config() {
     local gpu_version port model_path
     gpu_version=$(python3 -c "import json; c=json.load(open('$CONFIG')); print(c.get('cuda_version','12.9'))")
     port=$(python3 -c "import json; c=json.load(open('$CONFIG')); print(c.get('port', ${GPU_PORT[$gpu_version]}))")
-    model_path=$(python3 -c "import json; c=json.load(open('$CONFIG')); print(c.get('model_path',''))")
+    model_path=$(python3 -c "import json, os; c=json.load(open('$CONFIG')); print(os.path.expandvars(c.get('model_path','')))")
 
     if [[ -z "$model_path" ]]; then
         echo "Error: model_path not specified in config: $CONFIG" >&2
@@ -240,7 +242,7 @@ do_run_from_config() {
         --rm -d
         --name "$name"
         --network agentx-network
-        -p "${port}:9696"
+        -p "${port}:${port}"
         -v "$(dirname "${model_path}"):/models:ro,z"
     )
     

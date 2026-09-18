@@ -3,8 +3,8 @@
     "_comment2": "GPU: GTX 1060 (CUDA 12.9) | RTX 3050 (CUDA 13.2)",
 
     "model": "qwen-3.6-35B-A3B-MTP",
-    "model_path": "$LLAMA_MODELS_PATH/qwen-3.6-35B-A3B-MTP/Qwen3.6-35B-A3B-UD-IQ4_NL.gguf",
-    "mmproj": "$LLAMA_MODELS_PATH/qwen-3.6-35B-A3B-MTP/mmproj-Qwen3.6-35B-A3B-F16.gguf",
+    "model_path": "$LLAMA_MODELS_PATH/Qwen3.6-35B-A3B-UD-IQ4_NL.gguf",
+    "mmproj": "$LLAMA_MODELS_PATH/mmproj-Qwen3.6-35B-A3B-F16.gguf",
     "cuda_version": "12.9",
 
     "host": "0.0.0.0",

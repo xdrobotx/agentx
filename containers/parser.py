@@ -96,35 +96,40 @@ def generate_cli_args(config: dict, param_map: dict) -> str:
     """Generate a single-line string of llama-server CLI arguments."""
     args = []
 
-    # Model path (always first)
+    # 1. Handle Model Path correctly based on basename
     model_path = resolve_wsl2_path(config.get("model_path", ""))
     if model_path:
-        args.append(f"--model /models/model.gguf")
+        basename = os.path.basename(model_path)
+        args.append(f"--model /models/{basename}")
 
-    # mmproj (multimodal) — output as container path; runner mounts parent dir
+    # 2. Handle Multimodal (mmproj)
     mmproj = config.get("mmproj")
     if mmproj:
-        import os
         expanded = os.path.expandvars(mmproj)
-        # Extract just the filename for container path
         basename = os.path.basename(expanded)
         args.append(f"--mmproj /models/{basename}")
 
-    # Map config keys to CLI args using param map
+    # 3. Always enforce host and port so llama-server binds to 0.0.0.0
+    host = config.get("host", "0.0.0.0")
+    port = config.get("port", 9696)
+    args.append(f"--host {host}")
+    args.append(f"--port {port}")
+
+    # 4. Map remaining config keys
     for key, value in config.items():
-        if key in ("model", "model_path", "cuda_version", "mmproj"):
+        if key in ("model", "model_path", "cuda_version", "mmproj", "host", "port"):
             continue  # Already handled
         if key.startswith("_"):
-            continue  # Skip comments and internal keys
+            continue  # Skip comments/internal keys
 
         if key not in param_map or not isinstance(param_map[key], dict):
-            continue  # Unknown key or non-dict entry (e.g., comments)
+            continue
 
         mapping = param_map[key]
         flag = mapping["flag"]
         value_type = mapping["type"]
 
-        # Convert value to the right type
+        # Convert type
         if value_type == "int":
             value = int(value)
         elif value_type == "float":
@@ -135,26 +140,18 @@ def generate_cli_args(config: dict, param_map: dict) -> str:
             elif isinstance(value, int):
                 value = bool(value)
 
-        # Handle boolean flags (no value needed)
+        # Boolean flags
         if value_type == "bool":
             if value:
                 args.append(flag)
             continue
 
-        # Handle special flags
-        if flag == "--model":
-            continue  # Already added above
-
-        # Handle values that need quoting (e.g., JSON strings)
+        # Handle quoted strings
         if flag == "--chat-template-kwargs":
             args.append(f"{flag} '{value}'")
             continue
 
-        # Add the flag with its value
-        if isinstance(value, str):
-            args.append(f"{flag} {value}")
-        else:
-            args.append(f"{flag} {value}")
+        args.append(f"{flag} {value}")
 
     return " ".join(args)
 
