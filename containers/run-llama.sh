@@ -3,15 +3,15 @@
 # llama.cpp Container Runner
 #
 # Usage:
-#   ./run-llama.sh --gpu 12.9 --model /path/to/model.gguf [--port 9696]
-#   ./run-llama.sh --gpu 13.2 --model /path/to/model.gguf --port 9698
+#   ./run-llama.sh --gpu 12.9 --model /path/to/model.gguf [--port 6969]
+#   ./run-llama.sh --gpu 13.3 --model /path/to/model.gguf --port 9696
 #   ./run-llama.sh --config containers/configs/my-model.json
 #   ./run-llama.sh --router --model-a /path/model-a.gguf --model-b /path/model-b.gguf
 #   ./run-llama.sh --stop --gpu all
 #   ./run-llama.sh --status
 #   ./run-llama.sh --build
 #
-# GPU options: 12.9 | 13.2 | all
+# GPU options: 12.9 | 13.3 | all
 # =============================================================================
 
 set -euo pipefail
@@ -44,11 +44,11 @@ ROUTER_BACKEND=false
 # ---------------------------------------------------------------------------
 # GPU configs
 # ---------------------------------------------------------------------------
-declare -A GPU_PORT=( [12.9]=9696 [13.2]=9698 )
-declare -A GPU_IMAGE=( [12.9]="llama-server:cuda12.9" [13.2]="llama-server:cuda13.2" )
-declare -A GPU_NAME=( [12.9]="gtx1060" [13.2]="rtx3050" )
-declare -A GPU_CONTAINER=( [12.9]="llama-cpp-12.9" [13.2]="llama-cpp-13.2" )
-declare -A GPU_CF=( [12.9]="cuda-12-9.Containerfile" [13.2]="cuda-13-2.Containerfile" )
+declare -A GPU_PORT=( [12.9]=6969 [13.3]=9696 )
+declare -A GPU_IMAGE=( [12.9]="localhost/llama-server:cuda12.9" [13.3]="localhost/llama-server:cuda13.3" )
+declare -A GPU_NAME=( [12.9]="gtx1060" [13.3]="rtx3050" )
+declare -A GPU_CONTAINER=( [12.9]="llama-cpp-12.9" [13.3]="llama-cpp-13.3" )
+declare -A GPU_CF=( [12.9]="cuda-12-9.Containerfile" [13.3]="cuda-13-2.Containerfile" )
 
 # ---------------------------------------------------------------------------
 # Parse arguments
@@ -90,7 +90,7 @@ while [[ $# -gt 0 ]]; do
         --help|-h)
             echo "Usage: $0 [OPTIONS]"
             echo ""
-            echo "GPU options: 12.9 | 13.2 | all"
+            echo "GPU options: 12.9 | 13.3 | all"
             echo ""
             echo "Commands:"
             echo "  --gpu <ver> --model <path>  Run a single server"
@@ -120,7 +120,7 @@ detect_gpu_passthrough() {
     fi
     
     # Check if CDI is available (crun >= 1.29 + Podman with CDI support)
-    if podman info 2>/dev/null | grep -qi cdi; then
+    if cat /var/run/cdi/nvidia.yaml 2>/dev/null | grep -qi cdi; then
         GPU_PASSTHROUGH_METHOD="cdi"
         log "GPU passthrough: CDI mode"
         return
@@ -194,7 +194,7 @@ do_run_from_config() {
         exit 1
     fi
 
-    if [[ ! -x "$PARSER" ]]; then
+    if [[ ! -f "$PARSER" ]]; then
         echo "Error: Parser not found at $PARSER" >&2
         exit 1
     fi
@@ -265,7 +265,7 @@ do_run_from_config() {
 do_build() {
     log "Building llama.cpp containers..."
 
-    for ver in 12.9 13.2; do
+    for ver in 12.9 13.3; do
         local cf="${GPU_CF[$ver]}"
         local img="${GPU_IMAGE[$ver]}"
         log "Building $img from $cf..."
@@ -289,7 +289,7 @@ do_status() {
 do_stop() {
     if [[ "$GPU" == "all" ]]; then
         log "Stopping all llama.cpp containers..."
-        for ver in 12.9 13.2; do
+        for ver in 12.9 13.3; do
             local name
             name=$(get_container_name "$ver")
             if podman ps -q --filter "name=$name" 2>/dev/null | grep -q .; then
@@ -387,7 +387,7 @@ do_run_router() {
     [[ -z "$PORT_B" ]] && PORT_B=9698
 
     # Stop existing backend containers
-    for ver in 12.9 13.2; do
+    for ver in 12.9 13.3; do
         local name
         name=$(get_container_name "$ver")
         if podman ps -q --filter "name=$name" 2>/dev/null | grep -q .; then
@@ -397,7 +397,7 @@ do_run_router() {
     done
 
     # Check images exist
-    for ver in 12.9 13.2; do
+    for ver in 12.9 13.3; do
         local image
         image=$(get_image "$ver")
         if ! podman images --format "{{.Repository}}:{{.Tag}}" 2>/dev/null | grep -q "^${image}$"; then
@@ -415,7 +415,7 @@ do_run_router() {
         "$(get_image 12.9)" \
         --router \
         --router-backend "http://llama-cpp-12.9:9696 $MODEL_A_TAG" \
-        --router-backend "http://llama-cpp-13.2:9696 $MODEL_B_TAG"
+        --router-backend "http://llama-cpp-13.3:9696 $MODEL_B_TAG"
 
     # Wait for router to be ready
     sleep 2
@@ -444,13 +444,13 @@ do_run_router() {
         --router-url "http://llama-router:9696" \
         --router-tag "$MODEL_A_TAG"
 
-    # Backend 2 (13.2 / RTX 3050)
-    log "Starting backend 2 (llama-cpp-13.2) -> :$PORT_B"
+    # Backend 2 (13.3 / RTX 3050)
+    log "Starting backend 2 (llama-cpp-13.3) -> :$PORT_B"
     local gpu_args_2
     gpu_args_2=$(build_gpu_args)
     local backend2_args=(
         --rm -d
-        --name llama-cpp-13.2
+        --name llama-cpp-13.3
         --network agentx-network
         -p "${PORT_B}:9696"
         -v "$(dirname "${MODEL_B}"):/models:ro,z"
@@ -459,7 +459,7 @@ do_run_router() {
         [[ -n "$arg" ]] && backend2_args+=("$arg")
     done <<< "$gpu_args_2"
     podman run "${backend2_args[@]}" \
-        "$(get_image 13.2)" \
+        "$(get_image 13.3)" \
         --model "/models/${model_b_basename}" \
         --router-url "http://llama-router:9696" \
         --router-tag "$MODEL_B_TAG"

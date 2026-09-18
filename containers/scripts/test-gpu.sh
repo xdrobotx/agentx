@@ -35,7 +35,7 @@ run_wsl2_test() {
             -e NVIDIA_DRIVER_CAPABILITIES=all \
             -e NVIDIA_VISIBLE_DEVICES=all \
             -e LD_LIBRARY_PATH=/usr/lib/wsl/lib:/usr/lib/wsl/drivers/nv_dispsi.inf_amd64_671c0a23616db704 \
-            docker.io/library/ubuntu:24.04 \
+            docker.io/nvidia/cuda:13.3.1-runtime-ubuntu26.04 \
             /usr/lib/wsl/lib/nvidia-smi
     '
 }
@@ -45,7 +45,7 @@ run_cdi_test() {
     log "Running GPU test with CDI passthrough..."
     podman run --rm --device nvidia.com/gpu=all \
         --security-opt=label=disable \
-        docker.io/library/ubuntu:24.04 \
+        docker.io/nvidia/cuda:13.3.1-runtime-ubuntu26.04 \
         nvidia-smi
 }
 

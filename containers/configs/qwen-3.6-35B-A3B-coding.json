@@ -1,17 +1,17 @@
 {
     "_comment": "Qwen 3.6 35B-A3B Coding — MoE with speculative decoding (coding-optimized)",
-    "_comment2": "GPU: GTX 1060 (CUDA 12.9) | RTX 3050 (CUDA 13.2)",
+    "_comment2": "GPU: GTX 1060 (CUDA 12.9) | RTX 3050 (CUDA 13.3)",
 
     "model": "qwen-3.6-35B-A3B-coding",
     "model_path": "$LLAMA_MODELS_PATH/qwen-3.6-35B-A3B/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf",
     "mmproj": "$LLAMA_MODELS_PATH/qwen-3.6-35B-A3B/mmproj-Qwen3.6-35B-A3B-F16.gguf",
-    "cuda_version": "12.9",
+    "cuda_version": "13.3",
 
     "host": "0.0.0.0",
     "port": 9696,
     "ctx_size": 262144,
     "parallel": 1,
-    "threads": 9,
+    "threads": 8,
     "gpu_layers": "all",
     "cpu_moe": true,
     "cpu_moe_draft": true,
@@ -36,7 +36,7 @@
     "presence_penalty": 0.0,
     "frequency_penalty": 0.0,
     "reasoning": true,
-    "reasoning_budget": 2048,
+    "reasoning_budget": 1024,
     "reasoning_preserve": true,
     "jinja": true
 }

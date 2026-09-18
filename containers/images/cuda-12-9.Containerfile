@@ -36,7 +36,7 @@ RUN git clone https://github.com/ggml-org/llama.cpp.git . \
        -DCMAKE_CUDA_ARCHITECTURES=${CUDA_ARCH} \
        -DCMAKE_BUILD_TYPE=Release \
        -DBUILD_SHARED_LIBS=OFF \
-    && cmake --build build --config Release -j$(nproc) --target llama-server
+    && cmake --build build --config Release -j$(nproc) --target llama-server llama-quantize llama-bench
 
 # -----------------------------------------------------------------------------
 # Runtime Stage
@@ -49,7 +49,7 @@ COPY --from=builder /opt/llama.cpp/build/bin/llama-server /usr/local/bin/llama-s
 COPY --from=builder /opt/llama.cpp/build/bin/llama-quantize /usr/local/bin/llama-quantize
 COPY --from=builder /opt/llama.cpp/build/bin/llama-bench /usr/local/bin/llama-bench
 
-EXPOSE 9696
+EXPOSE 6969
 
 ENTRYPOINT ["llama-server"]
 CMD ["--help"]
